@@ -1450,21 +1450,78 @@
       orderCancel.addEventListener('click', () => orderModal.classList.remove('open'));
       orderModal.addEventListener('click', (e) => { if (e.target === orderModal) orderModal.classList.remove('open'); });
 
-      orderSubmit.addEventListener('click', () => {
-        const name = orderName.value.trim();
-        const phone = orderPhone.value.trim();
-        if (!name || !phone) {
-          alert('Заполните все поля');
-          return;
+     orderSubmit.addEventListener('click', async () => {
+    const name = orderName.value.trim();
+    const phone = orderPhone.value.trim();
+    
+    if (!name || !phone) {
+        alert('Заполните все поля');
+        return;
+    }
+
+    // Формируем список товаров в заказе
+    const itemsList = cart.map(item => {
+        const product = products.find(p => p.id === item.id);
+        if (!product) return '';
+        return `• ${product.name} × ${item.quantity} = ${(product.price * item.quantity).toLocaleString()} ₽`;
+    }).filter(Boolean).join('\n');
+
+    const totalPrice = getTotalPrice().toLocaleString();
+
+    // Создаём сообщение для Telegram
+    const message = `
+🛒 **НОВЫЙ ЗАКАЗ!**
+
+👤 **Имя:** ${name}
+📱 **Телефон:** ${phone}
+
+📦 **Товары:**
+${itemsList || 'Пусто'}
+
+💰 **Итого:** ${totalPrice} ₽
+
+📅 **Дата:** ${new Date().toLocaleString()}
+    `.trim();
+
+    try {
+        // Отправляем в Telegram
+        const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message,
+                parse_mode: 'Markdown'
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.ok) {
+            alert(`✅ Заказ отправлен в Telegram!\n\nИмя: ${name}\nТелефон: ${phone}\nСумма: ${totalPrice} ₽`);
+            
+            // Очищаем корзину
+            cart = [];
+            saveUserCart(currentUser, cart);
+            updateCartUI();
+            orderModal.classList.remove('open');
+            closeCart();
+        } else {
+            alert(`❌ Ошибка отправки: ${result.description || 'Неизвестная ошибка'}`);
         }
-        const total = getTotalPrice().toLocaleString();
-        alert(`✅ Заказ оформлен!\n\nИмя: ${name}\nТелефон: ${phone}\nСумма: ${total} ₽\n\nСпасибо за покупку!`);
-        cart = [];
-        saveUserCart(currentUser, cart);
-        updateCartUI();
-        orderModal.classList.remove('open');
-        closeCart();
-      });
+    } catch (error) {
+        alert('❌ Ошибка подключения. Проверьте интернет.');
+        console.error('Ошибка:', error);
+    }
+});
+// ========== ДАННЫЕ ТЕЛЕГРАМ БОТА ==========
+const BOT_TOKEN = '8900861131:AAGB3-y-Jj7BDWgrsfYJMajmQMMct9dYUCc';  // ЗАМЕНИ НА СВОЙ ТОКЕН
+const CHAT_ID = '5077592159';                                // ЗАМЕНИ НА СВОЙ CHAT ID
+// ==========================================
+
+
 
       // ============================================================
       // 12. ПОИСК
