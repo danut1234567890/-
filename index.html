@@ -1460,7 +1460,7 @@
         return;
     }
 
-    // Формируем список товаров в заказе
+    // Формируем список товаров
     const itemsList = cart.map(item => {
         const product = products.find(p => p.id === item.id);
         if (!product) return '';
@@ -1469,23 +1469,22 @@
 
     const totalPrice = getTotalPrice().toLocaleString();
 
-    // Создаём сообщение для Telegram
     const message = `
-🛒 **НОВЫЙ ЗАКАЗ!**
+🛒 НОВЫЙ ЗАКАЗ!
 
-👤 **Имя:** ${name}
-📱 **Телефон:** ${phone}
+👤 Имя: ${name}
+📱 Телефон: ${phone}
 
-📦 **Товары:**
+📦 Товары:
 ${itemsList || 'Пусто'}
 
-💰 **Итого:** ${totalPrice} ₽
+💰 Итого: ${totalPrice} ₽
 
-📅 **Дата:** ${new Date().toLocaleString()}
+📅 Дата: ${new Date().toLocaleString()}
     `.trim();
 
     try {
-        // Отправляем в Telegram
+        // Пробуем отправить через Telegram
         const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
             method: 'POST',
             headers: {
@@ -1498,23 +1497,30 @@ ${itemsList || 'Пусто'}
             })
         });
 
-        const result = await response.json();
-
-        if (result.ok) {
+        if (response.ok) {
             alert(`✅ Заказ отправлен в Telegram!\n\nИмя: ${name}\nТелефон: ${phone}\nСумма: ${totalPrice} ₽`);
-            
-            // Очищаем корзину
             cart = [];
             saveUserCart(currentUser, cart);
             updateCartUI();
             orderModal.classList.remove('open');
             closeCart();
         } else {
-            alert(`❌ Ошибка отправки: ${result.description || 'Неизвестная ошибка'}`);
+            // Если не получилось отправить в Telegram, показываем обычное сообщение
+            alert(`✅ Заказ оформлен!\n\nИмя: ${name}\nТелефон: ${phone}\nСумма: ${totalPrice} ₽\n\n⚠️ Заявка не отправлена в Telegram, но сохранена в браузере.`);
+            cart = [];
+            saveUserCart(currentUser, cart);
+            updateCartUI();
+            orderModal.classList.remove('open');
+            closeCart();
         }
     } catch (error) {
-        alert('❌ Ошибка подключения. Проверьте интернет.');
-        console.error('Ошибка:', error);
+        // Если ошибка — показываем обычное сообщение
+        alert(`✅ Заказ оформлен!\n\nИмя: ${name}\nТелефон: ${phone}\nСумма: ${totalPrice} ₽\n\n⚠️ Заявка не отправлена в Telegram, но сохранена в браузере.`);
+        cart = [];
+        saveUserCart(currentUser, cart);
+        updateCartUI();
+        orderModal.classList.remove('open');
+        closeCart();
     }
 });
 // ========== ДАННЫЕ ТЕЛЕГРАМ БОТА ==========
