@@ -129,7 +129,113 @@
     .product-page-admin button:hover { background: #b91c1c; }
     
     @media (max-width: 700px) { .product-page { grid-template-columns: 1fr; gap: 20px; padding: 24px; } .product-page-img { max-height: 300px; object-fit: cover; } }
-    @media (max-width: 600px) { .header-grid { flex-direction: column; align-items: stretch; } .search-wrap { max-width: 100%; } .header-right { justify-content: space-between; } .catalog { grid-template-columns: repeat(2, 1fr); gap: 14px; } }
+   @media (max-width: 600px) {
+  /* ===== ШАПКА ДЛЯ ТЕЛЕФОНА ===== */
+  .header-grid {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .logo {
+    font-size: 20px;
+    justify-content: center;
+  }
+  
+  .search-wrap {
+    max-width: 100%;
+    order: 1;
+  }
+  
+  .header-right {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    order: 2;
+  }
+  
+  .auth-btn {
+    font-size: 12px;
+    padding: 6px 14px;
+    min-height: 36px;
+  }
+  
+  .cart-icon {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-height: 36px;
+  }
+  
+  .cart-count {
+    min-width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+  
+  /* ===== КАТАЛОГ ===== */
+  .catalog {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .product-card {
+    padding: 10px;
+  }
+  
+  .product-name {
+    font-size: 13px;
+  }
+  
+  .product-price {
+    font-size: 15px;
+  }
+  
+  .add-btn {
+    font-size: 12px;
+    padding: 10px 0;
+    min-height: 44px;
+  }
+  
+  /* ===== МОДАЛКИ НА ТЕЛЕФОНЕ ===== */
+  .modal-box {
+    padding: 20px;
+    width: 95vw;
+  }
+  
+  .cart-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* ===== СТРАНИЦА ТОВАРА ===== */
+  .product-page {
+    padding: 16px;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .product-page-name {
+    font-size: 20px;
+  }
+  
+  .product-page-price {
+    font-size: 24px;
+  }
+  
+  .product-page-actions button {
+    padding: 12px 16px;
+    font-size: 14px;
+    min-height: 48px;
+  }
+  
+  /* ===== ПОИСК НА ТЕЛЕФОНЕ ===== */
+  .search-wrap input {
+    font-size: 14px;
+    padding: 8px 14px 8px 38px;
+  }
+}
   </style>
 </head>
 <body>
